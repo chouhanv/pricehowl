@@ -1,6 +1,8 @@
 var ObjectID = require('mongodb').ObjectID;
 var assert = require('assert');
 var BSON = require('mongodb').BSONPure;
+var checkIns = require("../models/checkIns");
+
 var monthArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 module.exports = { 
@@ -23,11 +25,14 @@ module.exports = {
 						j++;
 						if(data[i].checkIn.length > j){
 							formateDate(data[i].checkIn[j].time, function(convdt){
-								data[i].checkIn[j].time = convdt;
 								data[i].date = convdt;
 								delete data[i]._id;
 								var isNext = true;
 								if(data[i].checkIn[j].checkin_type == "r") data[i].checkIn[j].points = -(data[i].checkIn[j].points);
+								delete data[i].checkIn[j]._id;
+								delete data[i].checkIn[j].userId;
+								delete data[i].checkIn[j].checkin_type;
+								delete data[i].checkIn[j].time;
 								if(data[i].checkIn[j].vendor_id != null) {
 									isNext = false;
 									findvendor(data[i].checkIn[j].vendor_id, function(err, vendor){
@@ -36,10 +41,14 @@ module.exports = {
 										} else if(vendor) {
 											data[i].checkIn[j].vendor_logo = vendor.vendor_logo;
 										}
+										delete data[i].checkIn[j].vendor_id;
 										nextCheckInHistory();
 									});
 								}
-								if(isNext) nextCheckInHistory();
+								if(isNext){
+									delete data[i].checkIn[j].vendor_id;
+									nextCheckInHistory();
+								}
 							});
 								
 						} else {

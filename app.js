@@ -10,11 +10,12 @@ var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var debug = require('debug')('apiproject');
 
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://107.170.72.89:29065/Pricehowl');
 
 var User = require('./api/User')
 
 var app = express();
-
 
 app.set('views', path.join(__dirname, 'templates'));
 app.set('view engine', 'jade');
@@ -30,16 +31,16 @@ app.use(session({secret: 'ABCOWFWEFWKDC237634274CHMCJGSDF',resave: true,
 var db;
 var url = 'mongodb://107.170.72.89:29065/Pricehowl';
 //Use connect method to connect to the Server
-MongoClient.connect(url, function(err, database) {
-    assert.equal(null, err);
-    if(err) console.log(err);
-    else{
-      db=database;
-    }
-});
+// MongoClient.connect(url, function(err, database) {
+//     assert.equal(null, err);
+//     if(err) console.log(err);
+//     else{
+//       db=database;
+//     }
+// });
 
 app.use(function(req,res,next){
-    req.db = db;
+    req.db = mongoose.connection;
     next();
 });
 
