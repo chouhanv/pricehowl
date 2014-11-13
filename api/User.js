@@ -9,8 +9,9 @@ module.exports = {
 		var userID = req.params.userID;
 		var db = req.db;
 
-		db.collection("checkIns").aggregate({$group : { _id : "$time", checkIn: { $push: "$$ROOT" } } },
-		{ $sort : { _id : -1} } , function(err, data){
+		db.collection("checkIns").aggregate(
+			{$group : { _id :{$substr: ["$time", 0, 9]}, checkIn: { $push: "$$ROOT" } } },
+			{$sort : { "_id" : -1} } , function(err, data){
 
 			var i = -1;
 			function nextGroup(){
